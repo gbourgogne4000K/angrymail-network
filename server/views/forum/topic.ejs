@@ -1,0 +1,141 @@
+<div class="container">
+  <div id="topic-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p style="margin-top: 12px;">Loading topic...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const topicId = '<%= topicId %>';
+
+  // Load topic
+  fetch(`/api/forum/topics/${topicId}`)
+    .then(res => {
+      if (!res.ok) throw new Error('Topic not found');
+      return res.json();
+    })
+    .then(data => {
+      const { topic, posts, pagination } = data;
+
+      const html = `
+        <div style="margin-bottom: 20px;">
+          <a href="/forum" style="color: var(--secondary-color);">← Back to Forum</a>
+          <span style="color: var(--text-secondary); margin: 0 8px;">/</span>
+          <a href="/forum/c/${topic.category_slug}" style="color: var(--secondary-color);">${topic.category_name}</a>
+        </div>
+
+        <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; margin-bottom: 20px;">
+          <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; flex-shrink: 0;">
+              <img src="${topic.avatar_url || '/static/img/default-avatar.png'}" alt="${topic.display_name}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="font-weight: 700;">${topic.display_name}</span>
+                ${topic.is_verified ? '<span style="color: var(--verified-color);">✓</span>' : ''}
+                <span style="color: var(--text-secondary);">@${topic.username}</span>
+              </div>
+              <div style="color: var(--text-secondary); font-size: 14px;">
+                ${new Date(topic.created_at).toLocaleString()}
+              </div>
+            </div>
+          </div>
+
+          <h1 style="font-size: 28px; margin-bottom: 16px;">
+            ${topic.is_pinned ? '📌 ' : ''}
+            ${topic.is_locked ? '🔒 ' : ''}
+            ${topic.title}
+          </h1>
+
+          <div style="white-space: pre-wrap; margin-bottom: 20px; line-height: 1.6;">
+            ${topic.content}
+          </div>
+
+          <div style="display: flex; gap: 24px; color: var(--text-secondary); font-size: 14px;">
+            <span>👁️ ${topic.views_count} views</span>
+            <span>💬 ${topic.replies_count} replies</span>
+          </div>
+        </div>
+
+        ${posts && posts.length > 0 ? `
+          <div style="margin-bottom: 20px;">
+            <h2 style="font-size: 20px; margin-bottom: 16px;">${posts.length} Replies</h2>
+            ${posts.map(post => `
+              <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 12px;">
+                <div style="display: flex; gap: 16px;">
+                  <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0;">
+                    <img src="${post.avatar_url || '/static/img/default-avatar.png'}" alt="${post.display_name}" style="width: 100%; height: 100%; object-fit: cover;">
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                      <span style="font-weight: 700;">${post.display_name}</span>
+                      ${post.is_verified ? '<span style="color: var(--verified-color);">✓</span>' : ''}
+                      <span style="color: var(--text-secondary); font-size: 14px;">@${post.username}</span>
+                      <span style="color: var(--text-secondary); font-size: 14px;">·</span>
+                      <span style="color: var(--text-secondary); font-size: 14px;">${formatDate(post.created_at)}</span>
+                      ${post.is_solution ? '<span style="background: #2ecc71; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px;">✓ Solution</span>' : ''}
+                    </div>
+                    <div style="white-space: pre-wrap; margin-top: 8px; line-height: 1.5;">
+                      ${post.content}
+                    </div>
+                    <div style="margin-top: 12px; color: var(--text-secondary); font-size: 14px;">
+                      ❤️ ${post.likes_count || 0} likes
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            No replies yet. Be the first to reply!
+          </div>
+        `}
+
+        ${!topic.is_locked ? `
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px;">
+            <h3 style="margin-bottom: 16px;">Reply to this topic</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 16px;">
+              You need to be logged in to reply. This feature is coming soon!
+            </p>
+          </div>
+        ` : `
+          <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; text-align: center;">
+            🔒 This topic is locked. No new replies can be posted.
+          </div>
+        `}
+      `;
+
+      document.getElementById('topic-container').innerHTML = html;
+    })
+    .catch(err => {
+      console.error('Error loading topic:', err);
+      document.getElementById('topic-container').innerHTML = `
+        <div style="text-align: center; padding: 60px 20px;">
+          <h2 style="font-size: 32px; margin-bottom: 16px;">Topic Not Found</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 24px;">
+            The topic you're looking for doesn't exist or has been removed.
+          </p>
+          <a href="/forum" class="btn btn-primary" style="text-decoration: none;">Back to Forum</a>
+        </div>
+      `;
+    });
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 7) return date.toLocaleDateString();
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    if (minutes > 0) return `${minutes}m ago`;
+    return 'just now';
+  }
+</script>

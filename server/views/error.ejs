@@ -1,0 +1,16 @@
+<div class="container">
+  <div style="text-align: center; padding: 60px 20px;">
+    <h1 style="font-size: 72px; margin-bottom: 20px; color: var(--primary-color);">
+      <%= error.status %>
+    </h1>
+    <h2 style="font-size: 32px; margin-bottom: 16px;">
+      <%= error.status === 404 ? 'Page Not Found' : 'Oops! Something went wrong' %>
+    </h2>
+    <p style="color: var(--text-secondary); font-size: 18px; margin-bottom: 32px;">
+      <%= error.message %>
+    </p>
+    <a href="/" class="btn btn-primary" style="text-decoration: none; padding: 12px 32px; font-size: 16px;">
+      Back to Home
+    </a>
+  </div>
+</div>

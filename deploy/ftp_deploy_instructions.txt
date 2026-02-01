@@ -1,0 +1,263 @@
+# FTP Deployment Instructions for AngryMail
+
+## Prerequisites
+- FTP access to your web server
+- MySQL database created on the server
+- Node.js 18+ installed on the server
+- SSH access (recommended for running commands)
+
+## Step 1: Prepare Local Files
+
+1. Install production dependencies:
+   npm install --production
+
+2. Create production .env file with your server settings:
+   - Copy .env.example to .env
+   - Update all values for production
+   - Set NODE_ENV=production
+
+## Step 2: Upload Files via FTP
+
+Upload the following files and directories to your server:
+
+Required directories:
+- /server (entire directory)
+- /migrations (entire directory)
+- /scripts (entire directory)
+- /node_modules (entire directory - this may take a while)
+
+Required files:
+- package.json
+- package-lock.json
+- .env (your production environment file)
+
+Optional (if using Docker):
+- /docker (entire directory)
+
+## Step 3: Upload Using FTP Client
+
+Using FileZilla or similar FTP client:
+1. Connect to your server (ftp.yourdomain.com)
+2. Navigate to your web root (e.g., /public_html or /var/www/html)
+3. Create a directory for the application (e.g., /angrymail)
+4. Upload all files maintaining directory structure
+
+Using command-line FTP:
+```bash
+ftp ftp.yourdomain.com
+# Login with your credentials
+cd /path/to/installation
+binary
+prompt off
+mput *
+```
+
+Using SFTP (recommended):
+```bash
+sftp user@yourdomain.com
+cd /path/to/installation
+put -r server
+put -r migrations
+put -r scripts
+put -r node_modules
+put package.json
+put .env
+```
+
+## Step 4: Set Up Database on Server
+
+SSH into your server and run:
+
+```bash
+mysql -u root -p
+CREATE DATABASE angrymail_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'angrymail_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON angrymail_db.* TO 'angrymail_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+## Step 5: Run Database Migration
+
+SSH into your application directory:
+```bash
+cd /path/to/angrymail
+npm run migrate
+```
+
+Optional - seed sample data:
+```bash
+npm run seed
+```
+
+## Step 6: Install Process Manager (PM2)
+
+Install PM2 globally:
+```bash
+sudo npm install -g pm2
+```
+
+Start the application:
+```bash
+pm2 start server/index.js --name angrymail
+pm2 save
+pm2 startup
+```
+
+Follow the PM2 startup instructions to enable auto-restart on server reboot.
+
+## Step 7: Configure Reverse Proxy
+
+### Apache (.htaccess)
+Create .htaccess in your web root:
+
+```apache
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/static
+    RewriteRule ^(.*)$ http://localhost:3000/$1 [P,L]
+</IfModule>
+
+<IfModule mod_proxy.c>
+    ProxyPreserveHost On
+    ProxyPass /static !
+    ProxyPass / http://localhost:3000/
+    ProxyPassReverse / http://localhost:3000/
+</IfModule>
+```
+
+### Nginx
+Create /etc/nginx/sites-available/angrymail.com:
+
+```nginx
+server {
+    listen 80;
+    server_name angrymail.com www.angrymail.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+Enable and restart:
+```bash
+sudo ln -s /etc/nginx/sites-available/angrymail.com /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+## Step 8: Set Up SSL (Let's Encrypt)
+
+Install Certbot:
+```bash
+sudo apt update
+sudo apt install certbot python3-certbot-nginx
+```
+
+Get SSL certificate:
+```bash
+sudo certbot --nginx -d angrymail.com -d www.angrymail.com
+```
+
+Auto-renew:
+```bash
+sudo certbot renew --dry-run
+```
+
+## Step 9: Verify Installation
+
+1. Check application is running:
+   ```bash
+   pm2 status
+   pm2 logs angrymail
+   ```
+
+2. Test API endpoint:
+   ```bash
+   curl http://localhost:3000/api/status
+   ```
+
+3. Visit your domain:
+   https://angrymail.com
+
+## Step 10: Monitoring & Maintenance
+
+Monitor logs:
+```bash
+pm2 logs angrymail
+pm2 logs angrymail --lines 100
+```
+
+Restart application:
+```bash
+pm2 restart angrymail
+```
+
+Stop application:
+```bash
+pm2 stop angrymail
+```
+
+View process info:
+```bash
+pm2 info angrymail
+```
+
+Database backup:
+```bash
+mysqldump -u angrymail_user -p angrymail_db > backup_$(date +%Y%m%d).sql
+```
+
+## Troubleshooting
+
+### Application won't start
+- Check logs: pm2 logs angrymail
+- Verify .env file exists and has correct values
+- Check Node.js version: node --version (should be 18+)
+- Check database connection
+
+### Database connection errors
+- Verify MySQL is running: sudo systemctl status mysql
+- Check database credentials in .env
+- Ensure database exists: mysql -u root -p -e "SHOW DATABASES;"
+
+### Port already in use
+- Check what's using port 3000: lsof -ti:3000
+- Change PORT in .env file
+- Restart application: pm2 restart angrymail
+
+### Permission errors
+- Check file ownership: ls -la
+- Fix permissions: chmod -R 755 /path/to/angrymail
+- Fix node_modules: chmod -R 755 node_modules
+
+## Security Checklist
+
+- [ ] Set strong ADMIN_PASS in .env
+- [ ] Set random SESSION_SECRET (32+ characters)
+- [ ] Set NODE_ENV=production
+- [ ] Enable HTTPS (SSL certificate)
+- [ ] Set secure database password
+- [ ] Disable directory listing
+- [ ] Set up firewall rules
+- [ ] Enable rate limiting (already configured)
+- [ ] Regular backups of database
+- [ ] Keep dependencies updated: npm audit
+
+## Support
+
+If you encounter issues, check:
+1. PM2 logs: pm2 logs angrymail
+2. Nginx/Apache logs: /var/log/nginx/error.log
+3. MySQL logs: /var/log/mysql/error.log
+
+For more help, visit: https://github.com/your-username/angrymail/issues
