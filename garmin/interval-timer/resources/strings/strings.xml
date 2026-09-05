@@ -1,0 +1,26 @@
+<strings>
+    <string id="AppName">Intervals</string>
+
+    <string id="PhaseReady">READY</string>
+    <string id="PhasePrep">GET READY</string>
+    <string id="PhaseWork">WORK</string>
+    <string id="PhaseRest">REST</string>
+    <string id="PhaseDone">DONE</string>
+    <string id="Paused">PAUSED</string>
+
+    <string id="RoundLabel">Round $1$/$2$</string>
+    <string id="HintStart">START to begin</string>
+    <string id="HintMenu">MENU to configure</string>
+    <string id="TotalLabel">Total</string>
+
+    <string id="MenuTitle">Settings</string>
+    <string id="MenuWork">Work</string>
+    <string id="MenuRest">Rest</string>
+    <string id="MenuRounds">Rounds</string>
+    <string id="MenuPrep">Countdown</string>
+    <string id="MenuVibrate">Vibration</string>
+    <string id="MenuTones">Tones</string>
+    <string id="On">On</string>
+    <string id="Off">Off</string>
+    <string id="Seconds">$1$ s</string>
+</strings>

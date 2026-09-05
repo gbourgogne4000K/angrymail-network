@@ -1,0 +1,29 @@
+<settings>
+    <setting propertyKey="@Properties.AccentColor" title="@Strings.SetAccent">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.ColWhite</listEntry>
+            <listEntry value="1">@Strings.ColBlue</listEntry>
+            <listEntry value="2">@Strings.ColOrange</listEntry>
+            <listEntry value="3">@Strings.ColGreen</listEntry>
+            <listEntry value="4">@Strings.ColRed</listEntry>
+            <listEntry value="5">@Strings.ColAmber</listEntry>
+            <listEntry value="6">@Strings.ColMagenta</listEntry>
+            <listEntry value="7">@Strings.ColTeal</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.ShowSeconds" title="@Strings.SetSeconds">
+        <settingConfig type="boolean" />
+    </setting>
+    <setting propertyKey="@Properties.ShowHeartRate" title="@Strings.SetHeartRate">
+        <settingConfig type="boolean" />
+    </setting>
+    <setting propertyKey="@Properties.LeftField" title="@Strings.SetLeftField">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.FieldSteps</listEntry>
+            <listEntry value="1">@Strings.FieldCalories</listEntry>
+            <listEntry value="2">@Strings.FieldDistance</listEntry>
+            <listEntry value="3">@Strings.FieldFloors</listEntry>
+            <listEntry value="4">@Strings.FieldActive</listEntry>
+        </settingConfig>
+    </setting>
+</settings>

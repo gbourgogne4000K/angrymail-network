@@ -1,0 +1,23 @@
+<strings>
+    <string id="AppName">Aurora</string>
+
+    <string id="SetAccent">Accent colour</string>
+    <string id="SetSeconds">Show seconds</string>
+    <string id="SetHeartRate">Show heart rate</string>
+    <string id="SetLeftField">Left field</string>
+
+    <string id="ColWhite">White</string>
+    <string id="ColBlue">Blue</string>
+    <string id="ColOrange">Orange</string>
+    <string id="ColGreen">Green</string>
+    <string id="ColRed">Red</string>
+    <string id="ColAmber">Amber</string>
+    <string id="ColMagenta">Magenta</string>
+    <string id="ColTeal">Teal</string>
+
+    <string id="FieldSteps">Steps</string>
+    <string id="FieldCalories">Calories</string>
+    <string id="FieldDistance">Distance</string>
+    <string id="FieldFloors">Floors</string>
+    <string id="FieldActive">Active minutes</string>
+</strings>

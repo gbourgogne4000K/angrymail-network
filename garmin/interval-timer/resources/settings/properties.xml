@@ -1,0 +1,8 @@
+<properties>
+    <property id="WorkSeconds" type="number">30</property>
+    <property id="RestSeconds" type="number">15</property>
+    <property id="Rounds" type="number">8</property>
+    <property id="PrepSeconds" type="number">10</property>
+    <property id="UseVibration" type="boolean">true</property>
+    <property id="UseTones" type="boolean">true</property>
+</properties>

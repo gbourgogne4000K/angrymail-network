@@ -1,0 +1,20 @@
+<settings>
+    <setting propertyKey="@Properties.WorkSeconds" title="@Strings.MenuWork">
+        <settingConfig type="numeric" min="5" max="900" />
+    </setting>
+    <setting propertyKey="@Properties.RestSeconds" title="@Strings.MenuRest">
+        <settingConfig type="numeric" min="0" max="900" />
+    </setting>
+    <setting propertyKey="@Properties.Rounds" title="@Strings.MenuRounds">
+        <settingConfig type="numeric" min="1" max="99" />
+    </setting>
+    <setting propertyKey="@Properties.PrepSeconds" title="@Strings.MenuPrep">
+        <settingConfig type="numeric" min="0" max="60" />
+    </setting>
+    <setting propertyKey="@Properties.UseVibration" title="@Strings.MenuVibrate">
+        <settingConfig type="boolean" />
+    </setting>
+    <setting propertyKey="@Properties.UseTones" title="@Strings.MenuTones">
+        <settingConfig type="boolean" />
+    </setting>
+</settings>

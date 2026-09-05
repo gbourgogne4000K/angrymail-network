@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!-- Intervalles : chronometre travail/repos pour Garmin fenix 7. -->
+<iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
+    <iq:application entry="IntervalApp"
+                    id="3faa2338339545b2b48e711fdbc542c3"
+                    launcherIcon="@Drawables.LauncherIcon"
+                    minApiLevel="3.2.0"
+                    name="@Strings.AppName"
+                    type="watch-app">
+        <iq:products>
+            <iq:product id="fenix7"/>
+            <iq:product id="fenix7s"/>
+            <iq:product id="fenix7x"/>
+            <iq:product id="fenix7pro"/>
+            <iq:product id="fenix7spro"/>
+            <iq:product id="fenix7xpro"/>
+            <iq:product id="fenix7pronowifi"/>
+            <iq:product id="fenix7xpronowifi"/>
+        </iq:products>
+        <iq:permissions/>
+        <iq:languages>
+            <iq:language>eng</iq:language>
+            <iq:language>fre</iq:language>
+        </iq:languages>
+        <iq:barrels/>
+    </iq:application>
+</iq:manifest>
